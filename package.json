@@ -1,0 +1,39 @@
+{
+  "name": "random-words",
+  "version": "1.0.0",
+  "description": "Command line program to create random words via Markov chain using a text file you supply as seed data. Good for creating new names.",
+  "main": "random-words.js",
+  "scripts": {
+    "prepare": "sai-build random-words",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "random-words": "random-words.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seanmpuckett/random-words.git"
+  },
+  "keywords": [
+    "random",
+    "words",
+    "markov",
+    "chain",
+    "generator",
+    "text",
+    "processor"
+  ],
+  "author": "Sean M Puckett <seanmpuckett@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seanmpuckett/random-words/issues"
+  },
+  "homepage": "https://github.com/seanmpuckett/random-words#readme",
+  "dependencies": {
+    "sai-library": "^1.0.9"
+  },
+  "devDependencies": {
+    "sai-language": "^0.1.16",
+    "pegjs": "^0.10.0"
+  }
+}

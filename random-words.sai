@@ -1,0 +1,209 @@
+#!/usr/bin/env sai-run
+
+//////////////////
+//
+//  Markov chain random word generator
+
+reference:
+  FS from require 'fs'
+  ReadFile FS's readFileSync
+  Floor ~Math's floor
+  Random ~Math's random
+  Exit ~process's exit
+  WATCHDOG 100
+
+
+object RW main
+
+instance:
+
+  wordcount 100
+  truncate undefined
+  window 3
+  frequency false
+  weighted false
+  minimum undefined
+  
+  leader ''
+  corpus empty
+  markov blank
+  totals blank
+
+
+Instantiate task
+
+  set my Analyzer to my AnalyzeUnweighted
+
+  set argv to ~process's argv 
+  if 'node' is (argv.0 limit -4) .. shift'd argv
+  if 'sai-run' is (argv.0 limit -7) .. shift'd argv
+  shift'd argv
+  
+  if argv's length < 1
+    debug '''
+      random-words -- Generate new, unique words from a seed set of words
+      
+      USAGE
+        random-words [seed.txt]   - print a markov chain generated list of random words
+      
+      OPTIONS
+        -c, --count [number]      - maximum number of unique words to generate (default ${my wordcount})
+        -f, --frequency           - show frequency counts for each unique word
+        -i, --influence           - each input line may have a number, the influence of words on that line
+        -l, --limit [number]      - limit output to how many most frequent words (default all)
+        -m, --minimum [number]    - minimum length of word to generate (default, and lowest, is window size)
+        -w, --window [number]     - size of the markov analysis window in characters, (2+, default ${my window})
+        
+      EXAMPLE
+        random-words -c 50 countries.txt
+        
+      NOTE
+        Results are printed to STDOUT, separated by spaces. STDIN is not accepted, you must
+        supply a file. Duplicates, and words that appear in the orginal text are not included
+        in the output. If the probability of generating unique words is low, it may take a while
+        to generate a large set of unique words. 
+        
+    Exit
+
+  while shift'd argv
+    switch it
+    
+      case '-c', '--count'
+        set wordcount to number shift'd argv
+        
+      case '-w', '--window'
+        set window to number shift'd argv
+        if window < 2
+          debug `Error: --window cannot be less than 2.
+          Exit
+    
+      case '-i', '--influence'
+        set my Analyzer to my AnalyzeWeighted
+        
+      case '-f', '--frequency'
+        set frequency true
+        
+      case '-l', '--limit'
+        set truncate to number shift'd argv
+        
+      case '-m', '--minimum'
+        set minimum to number shift'd argv
+        
+      default 
+        try
+          set source from ReadFile it, 'utf8'
+        catch
+          debug `Error ${error.message} reading file.
+          Exit
+        my Analyzer source
+        unless corpus's length
+          debug `No input words longer than ${window} letters, cannot produce a markov chain. 
+        else
+          set results from my Generate; limit 0, truncate
+          unless results's length
+            debug 'No unique words generated. Try increasing count or decreasing window size.'
+          else
+            if results's length < (truncate?wordcount)/2
+              debug 'Few unique words generated due to high window size or low input variety.'
+            set results to self thru toUpperCase'd (it limit 1); + (it limit 1, undefined)
+            debug join'd results ' '
+
+
+
+AddWord task given word, weight
+  set word to '${leader}${word}_'
+  count word's length - window
+    set current to word limit counter, window
+    set predicted to word limit counter + window, 1
+    set markov\current default blank
+    set markov\current\predicted to weight + self?0
+
+
+
+GetWord task
+  set word to leader
+  do until predicted is '_'
+    set
+      current to word limit -window
+      selection from Floor totals\current * !Random
+      predicted to markov\current into 'BAD_MARKOV'
+        if selection >= 0 
+          set selection to self - it
+          if selection < 0
+            set sum to key
+      word + predicted
+  set word to self limit window, -1
+  return word
+
+
+
+Finalize task
+  every markov
+    set totals\key to it into 0 sum + it
+
+
+
+AnalyzeUnweighted task given source
+  set
+    markov to blank
+    leader to repeat'd '_' window
+    corpus to chain source
+      toLowerCase
+      replace /[^a-z\-]/g, ' '
+      split /\s+/
+      has it's length >= window
+    
+  every corpus has it's length > window 
+    my AddWord it, 1
+  
+  my Finalize
+  
+    
+AnalyzeWeighted task given source
+  set 
+    markov to blank    
+    valid to empty
+    leader to repeat'd '_' window
+    corpus to chain source
+      toLowerCase
+      replace /[^a-z\-0-9]/g, ' '
+      split /[\r\n]/
+      thru split'd it /\s+/
+      thru it by number it desc
+  
+  every corpus as line
+    set weight to 1
+    every line as word
+      if number word 
+        set weight to trial
+      else if word's length >= window
+        push'd valid word
+        if word's length > window
+          my AddWord it, weight
+
+  set corpus to valid ? blank
+  my Finalize
+  
+
+
+Generate task 
+  set
+    results to empty
+    tally to corpus into blank 
+      set sum[it] 1
+    leader to repeat'd '_' window
+    duplicate to WATCHDOG * wordcount
+
+  while results's length < wordcount and duplicate > 0
+    with from my GetWord
+      unless tally\it or it's length < minimum
+        push'd results it
+      else
+        dec duplicate
+      inc tally\it
+    
+  set results to self by tally\it desc
+  if frequency
+     set results to self thru '${it}(${tally\it})'
+  
+  return results
