@@ -1,0 +1,141 @@
+//////////////////
+//
+//  Markov chain random word generator
+
+reference:
+  Floor ~Math's floor
+  Random ~Math's random
+  WATCHDOG 100
+
+
+object MarkovWord main
+
+instance:
+
+  // settings
+  window 3
+  frequency false
+  minimum 0
+  
+  // internal
+  leader ''
+  corpus empty
+  markov blank
+  totals blank
+  _window undefined
+
+
+window get
+  return _window
+set given w
+  set
+    _window to w
+    leader repeat'd '_' w
+    corpus empty
+    markov blank
+    totals blank
+
+
+
+Configure task given options
+  every options select list window, frequency, minimum
+    set me[key] it
+
+
+
+AddWord task given word, weight
+  set word to '${leader}${word}_'
+  count word's length - window
+    set current to word limit counter, window
+    set predicted to word limit counter + window, 1
+    set markov\current default blank
+    set markov\current\predicted to weight + self?0
+
+
+
+GetWord task
+  set word to leader
+  do until predicted is '_'
+    set
+      current to word limit -window
+      selection from Floor totals\current * !Random
+      predicted to markov\current into 'BAD_MARKOV'
+        if selection >= 0 
+          set selection to self - it
+          if selection < 0
+            set sum to key
+      word + predicted
+  set word to self limit window, -1
+  return word
+
+
+
+Finalize task
+  every markov
+    set totals\key to it into 0 sum + it
+
+
+
+AnalyzeUnweighted task given source
+  set
+    markov to blank
+    leader to repeat'd '_' window
+    corpus to chain source
+      toLowerCase
+      replace /[^a-z\-]/g, ' '
+      split /\s+/
+      has it's length >= window
+    
+  every corpus has it's length > window 
+    my AddWord it, 1
+  
+  my Finalize
+  
+    
+AnalyzeWeighted task given source
+  set 
+    markov to blank    
+    valid to empty
+    corpus to chain source
+      toLowerCase
+      replace /[^a-z\-0-9]/g, ' '
+      split /[\r\n]/
+      thru split'd it /\s+/
+      thru it by number it desc
+  
+  every corpus as line
+    set weight to 1
+    every line as word
+      if number word 
+        set weight to trial
+      else if word's length >= window
+        push'd valid word
+        if word's length > window
+          my AddWord it, weight
+
+  set corpus to valid ? blank
+  my Finalize
+  
+
+
+Generate task given wordcount
+  set
+    results to empty
+    tally to corpus into blank 
+      set sum\it 1
+    duplicate to WATCHDOG * wordcount
+
+  while results's length < wordcount and duplicate > 0
+    set word from my GetWord
+    unless tally\word or word's length < minimum
+      push'd results word
+    else
+      dec duplicate
+    inc tally\word
+    
+  set results to self by tally\it desc
+  if frequency
+     set results to self thru '${it}(${tally\it})'
+  
+  return results
+
