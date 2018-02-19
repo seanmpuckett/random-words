@@ -30,10 +30,10 @@
   },
   "homepage": "https://github.com/seanmpuckett/random-words#readme",
   "dependencies": {
-    "sai-library": "^1.0.10"
+    "sai-library": "^1.0.11"
   },
   "devDependencies": {
-    "sai-language": "^0.1.17",
+    "sai-language": "^0.1.18",
     "pegjs": "^0.10.0"
   }
 }
