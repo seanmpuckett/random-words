@@ -9,6 +9,7 @@ reference:
   ReadFile FS's readFileSync
   Floor ~Math's floor
   Random ~Math's random
+  ARGV ~process's argv
   Exit ~process's exit
   WATCHDOG 100
 
@@ -20,7 +21,7 @@ instance:
   truncate undefined
   window 3
   frequency false
-  weighted false
+  weighted 'AnalyzeUnweighted'
   minimum undefined
 
   markovWord undefined
@@ -30,7 +31,7 @@ Instantiate task
 
   set markovWord create 'MarkovWord'
 
-  set argv to ~process's argv 
+  set argv to copy ARGV 
   if 'node' is (argv.0 limit -4) .. shift'd argv
   if 'sai-run' is (argv.0 limit -7) .. shift'd argv
   shift'd argv
@@ -65,50 +66,46 @@ Instantiate task
     switch it
     
       case '-c', '--count'
-        set  wordcount to number shift'd argv
+        set wordcount to number shift'd argv
         
       case '-w', '--window'
         with number shift'd argv
           unless it < 2
-            set  window to it
+            set window to it
           else
             debug `Error: --window cannot be less than 2.
             Exit
     
       case '-i', '--influence'
-        set  weighted true
+        set weighted 'AnalyzeWeighted'
         
       case '-f', '--frequency'
-        set  frequency true
+        set frequency true
         
       case '-l', '--limit'
-        set  truncate to number shift'd argv
+        set truncate to number shift'd argv
         
       case '-m', '--minimum'
-        set  minimum to number shift'd argv
+        set minimum to number shift'd argv
         
       default 
         try
           set source from ReadFile it, 'utf8'
         catch
-          debug `Error ${error.message} reading file.
+          debug `Error ${error's message} reading file.
           Exit
           
-        markovWord's Configure me 
-        
-        if  weighted
-          markovWord's AnalyzeWeighted source
+        markovWord.Configure me 
+        markovWord\weighted source
+
+        unless markovWord's success
+          debug `No input words longer than ${window} letters, cannot produce a markov chain. 
         else
-          markovWord's AnalyzeUnweighted source
-        
-        unless markovWord's corpus's length
-          debug `No input words longer than ${ window} letters, cannot produce a markov chain. 
-        else
-          set results Generate'd markovWord  wordcount; limit 0,  truncate
+          set results Generate'd markovWord wordcount; limit 0, truncate
           unless results's length
             debug 'No unique words generated. Try increasing count or decreasing window size.'
           else
-            if results's length < ( truncate ?  wordcount)/2
+            if results's length < (truncate ? wordcount)/2
               debug 'Few unique words generated due to high window size or low input variety.'
             set results to self thru toUpperCase'd (it limit 1); + (it limit 1, undefined)
             debug join'd results ' '
