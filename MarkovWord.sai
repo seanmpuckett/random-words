@@ -17,6 +17,8 @@ instance:
   frequency false
   minimum 0
   
+  settings list window, frequency, minimum
+  
   // internal
   leader ''
   corpus empty
@@ -41,19 +43,17 @@ set given w
 
 
 Configure task given options
-  every options select list window, frequency, minimum
+  every options select settings
     set me\key it
 
 
 Finalize task
-  every markov
+  each markov
     set totals\key to it into 0 sum + it
 
 
 AnalyzeUnweighted task given source
   set
-    markov to blank
-    leader to repeat'd '_' window
     corpus to chain source
       toLowerCase
       replace /[^a-z\-]/g, ' '
@@ -68,7 +68,6 @@ AnalyzeUnweighted task given source
     
 AnalyzeWeighted task given source
   set 
-    markov to blank    
     valid to empty
     corpus to chain source
       toLowerCase
@@ -112,6 +111,7 @@ Generate task given wordcount
      set results to self thru '${it}(${tally\it})'
   
   return results
+
 
 AddWord task given word, weight
   set word to '${leader}${word}_'

@@ -7,8 +7,6 @@
 reference:
   FS from require 'fs'
   ReadFile FS's readFileSync
-  Floor ~Math's floor
-  Random ~Math's random
   ARGV ~process's argv
   Exit ~process's exit
   WATCHDOG 100
@@ -107,6 +105,8 @@ Instantiate task
           else
             if results's length < (truncate ? wordcount)/2
               debug 'Few unique words generated due to high window size or low input variety.'
+              
             set results to self thru toUpperCase'd (it limit 1); + (it limit 1, undefined)
             debug join'd results ' '
+
 

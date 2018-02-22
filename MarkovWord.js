@@ -5,7 +5,7 @@
 
 "use strict";
 
-var prototype=new function(){
+var prototype=new function() {
 this.Constructor=function(){};
 this.__tobelocked=[];
 this.__tobefrozen=[];
@@ -16,11 +16,14 @@ return this;
 }();
 var $AI=require("sai-library");
 // Generated code follows
-var __context={"name":"MarkovWord","loader":"SAI.GetSourceFromPaths","path":"MarkovWord.sai","mtime":"2018-02-18T23:56:39.628Z","fetched":"2018-02-19T00:01:38.892Z"};
+var __context={"name":"MarkovWord","loader":"SAI.GetSourceFromPaths","path":"MarkovWord.sai","mtime":"2018-02-22T02:15:48.597Z","fetched":"2018-02-22T02:16:36.502Z"};
 var _Floor = Math.floor;
 var _Random = Math.random;
 var _WATCHDOG = 100;
 var isa = prototype.isa = 'MarkovWord';
+var $bindfail = function(m) {
+  throw new Error("SAI: A call to " + m + " on object " + isa + " has come unbound from any instance of that object. (If this is not in error, mark the declaration of " + m + " as unbound.)");
+}
 prototype.isof['MarkovWord'] = {
   version: '0.0.0-unspecified',
   isa: isa,
@@ -35,6 +38,7 @@ var $1g = function() {
     window: 3,
     frequency: false,
     minimum: 0,
+    settings: ['window', 'frequency', 'minimum'],
     leader: '',
     corpus: [],
     markov: {},
@@ -84,8 +88,8 @@ Object.defineProperty(prototype, "window", {
 var $6g = prototype['Configure'] || function() {};
 prototype['Configure'] = function(p) {
   var $7, $6, $5, $2, _options = p,
-    $ = this; {
-    var $3 = $AI.kviterate_op($AI.select_op(_options, ['window', 'frequency', 'minimum'])),
+    $ = this['Configure'] ? this : $bindfail('Configure'); {
+    var $3 = $AI.kviterate_op($AI.select_op(_options, $.settings)),
       $4 = $3.next();
     if (!$4.done)
       for (; !$4.done; $4 = $3.next()) {
@@ -97,46 +101,41 @@ prototype['Configure'] = function(p) {
 };
 var $7g = prototype['Finalize'] || function() {};
 prototype['Finalize'] = function(p) {
-  var $13, $12, $11, $8, $ = this; {
-    var $9 = $AI.kviterate_op($.markov),
-      $10 = $9.next();
-    if (!$10.done)
-      for (; !$10.done; $10 = $9.next()) {
-        $11 = $10.value[1];
-        $12 = $10.value[0];
-        $.totals[$12] = $AI.reduce_op($11, function(_sum, $_v, $_k) {
-          return (_sum + $_v);
-        }, 0);;
-      }
+  var $14, $13, $12, $11, $8, $ = this['Finalize'] ? this : $bindfail('Finalize'); {
+    var $13 = $.markov;
+    if (undefined === $13) $13 = [];
+    for (var $12 in $13) {
+      var $11 = $13[$12];
+      $.totals[$12] = $AI.reduce_op($11, function(_sum, $_v, $_k) {
+        return (_sum + $_v);
+      }, 0);
+    }
   }
 };
 var $8g = prototype['AnalyzeUnweighted'] || function() {};
 prototype['AnalyzeUnweighted'] = function(p) {
-  var $_d, $_c, $19, $18, $17, $14, _source = p,
-    $ = this; {
-    $.markov = {};
-    $.leader = '_'.repeat($.window);
+  var $_d, $_c, $20, $19, $18, $15, _source = p,
+    $ = this['AnalyzeUnweighted'] ? this : $bindfail('AnalyzeUnweighted'); {
     $.corpus = $AI.filter_op((((undefined === ($_c = (($_d = ((undefined === ($_c = (($_d = ((undefined === ($_c = (($_d = _source).toLowerCase()))) ? $_d : $_c)).replace(/[^a-z\-]/g, ' ')))) ? $_d : $_c)).split(/\s+/)))) ? $_d : $_c)), function($_v, $_k) {
       return (($_v.length >= $.window));
     });
-    var $15 = $AI.kviterate_op($AI.filter_op(($.corpus), function($_v, $_k) {
+    var $16 = $AI.kviterate_op($AI.filter_op(($.corpus), function($_v, $_k) {
         return (($_v.length > $.window));
       })),
-      $16 = $15.next();
-    if (!$16.done)
-      for (; !$16.done; $16 = $15.next()) {
-        $17 = $16.value[1];
-        $18 = $16.value[0];
-        $.AddWord($17, 1);;
+      $17 = $16.next();
+    if (!$17.done)
+      for (; !$17.done; $17 = $16.next()) {
+        $18 = $17.value[1];
+        $19 = $17.value[0];
+        $.AddWord($18, 1);;
       }
     $.Finalize();
   }
 };
 var $9g = prototype['AnalyzeWeighted'] || function() {};
 prototype['AnalyzeWeighted'] = function(p) {
-  var $_d, $_c, $_b, $35, $34, $33, $29, $28, $27, $23, $22, $21, _word, _weight, _line, _valid, $20, _source = p,
-    $ = this; {
-    $.markov = {};
+  var $_d, $_c, $_b, $36, $35, $34, $30, $29, $28, $24, $23, $22, _word, _weight, _line, _valid, $21, _source = p,
+    $ = this['AnalyzeWeighted'] ? this : $bindfail('AnalyzeWeighted'); {
     _valid = [];
     $.corpus = $AI.map_op($AI.map_op(((undefined === ($_c = (($_d = ((undefined === ($_c = (($_d = ((undefined === ($_c = (($_d = _source).toLowerCase()))) ? $_d : $_c)).replace(/[^a-z\-0-9]/g, ' ')))) ? $_d : $_c)).split(/[\r\n]/)))) ? $_d : $_c), function($_v, $_k) {
       return $_v.split(/\s+/)
@@ -150,26 +149,26 @@ prototype['AnalyzeWeighted'] = function(p) {
         return 0;
       })
     });
-    var $34 = $.corpus;
-    if (undefined === $34) $34 = [];
-    var $32 = $34.length;
-    if ($32) {
-      var _line, $33 = 0;
-      for (; $33 < $32; $33++) {
-        _line = $34[$33];
+    var $35 = $.corpus;
+    if (undefined === $35) $35 = [];
+    var $33 = $35.length;
+    if ($33) {
+      var _line, $34 = 0;
+      for (; $34 < $33; $34++) {
+        _line = $35[$34];
         _weight = 1;
-        var $28 = _line;
-        if (undefined === $28) $28 = [];
-        var $26 = $28.length;
-        if ($26) {
-          var _word, $27 = 0;
-          for (; $27 < $26; $27++) {
-            _word = $28[$27];
-            if (($21 = (($AI.number_op(_word))))) {
-              _weight = $21;
-            } else if (($23 = ((_word.length >= $.window)))) {
+        var $29 = _line;
+        if (undefined === $29) $29 = [];
+        var $27 = $29.length;
+        if ($27) {
+          var _word, $28 = 0;
+          for (; $28 < $27; $28++) {
+            _word = $29[$28];
+            if (($22 = (($AI.number_op(_word))))) {
+              _weight = $22;
+            } else if (($24 = ((_word.length >= $.window)))) {
               _valid.push(_word);
-              if (($22 = ((_word.length > $.window)))) {
+              if (($23 = ((_word.length > $.window)))) {
                 $.AddWord(_word, _weight);
               }
             }
@@ -183,16 +182,16 @@ prototype['AnalyzeWeighted'] = function(p) {
 };
 var $10g = prototype['Generate'] || function() {};
 prototype['Generate'] = function(p) {
-  var $_d, $_c, $38, $37, _word, _duplicate, _tally, _results, $36, _wordcount = p,
-    $ = this; {
+  var $_d, $_c, $39, $38, _word, _duplicate, _tally, _results, $37, _wordcount = p,
+    $ = this['Generate'] ? this : $bindfail('Generate'); {
     _results = [];
     _tally = $AI.reduce_op($.corpus, function(_sum, $_v, $_k) {
       _sum[$_v] = 1;
       return _sum;
     }, {});
     _duplicate = (_WATCHDOG * _wordcount);
-    var $37;
-    while ($37 = (((_results.length < _wordcount) && (_duplicate > 0)))) {
+    var $38;
+    while ($38 = (((_results.length < _wordcount) && (_duplicate > 0)))) {
       _word = $.GetWord();
       if (!((_tally[_word] || (_word.length < $.minimum)))) {
         _results.push(_word);
@@ -209,7 +208,7 @@ prototype['Generate'] = function(p) {
       if (aa > bb) return -1;
       return 0;
     });
-    if (($38 = ($.frequency))) {
+    if (($39 = ($.frequency))) {
       _results = $AI.map_op(_results, function($_v, $_k) {
         return '' + $_v + '(' + _tally[$_v] + ')'
       });
@@ -219,14 +218,14 @@ prototype['Generate'] = function(p) {
 };
 var $11g = prototype['AddWord'] || function() {};
 prototype['AddWord'] = function(p, _weight) {
-  var $_b, $43, $42, $41, _predicted, _current, $39, _word = p,
-    $ = this; {
+  var $_b, $44, $43, $42, _predicted, _current, $40, _word = p,
+    $ = this['AddWord'] ? this : $bindfail('AddWord'); {
     _word = '' + $.leader + _word + '_';
-    var $41 = 0,
-      $40 = (_word.length - $.window);
-    for (; $41 < $40; $41 += 1) {
-      _current = $AI.slice_op((_word), $41, $.window);
-      _predicted = $AI.slice_op((_word), ($41 + $.window), 1);
+    var $42 = 0,
+      $41 = (_word.length - $.window);
+    for (; $42 < $41; $42 += 1) {
+      _current = $AI.slice_op((_word), $42, $.window);
+      _predicted = $AI.slice_op((_word), ($42 + $.window), 1);
       if (undefined === $.markov[_current]) $.markov[_current] = {};
       $.markov[_current][_predicted] = (_weight + ((undefined !== ($_b = $.markov[_current][_predicted])) ? $_b : 0));
     }
@@ -234,15 +233,15 @@ prototype['AddWord'] = function(p, _weight) {
 };
 var $12g = prototype['GetWord'] || function() {};
 prototype['GetWord'] = function(p) {
-  var $_d, $_c, $46, $45, _predicted, _selection, _current, _word, $44, $ = this; {
+  var $_d, $_c, $47, $46, _predicted, _selection, _current, _word, $45, $ = this['GetWord'] ? this : $bindfail('GetWord'); {
     _word = $.leader;
     do {
       _current = $AI.slice_op((_word), undefined, (0 - ($.window)));
       _selection = _Floor(($.totals[_current] * _Random()));
       _predicted = $AI.reduce_op($.markov[_current], function(_sum, $_v, $_k) {
-        if (($46 = ((_selection >= 0)))) {
+        if (($47 = ((_selection >= 0)))) {
           _selection = (_selection - $_v);
-          if (($45 = ((_selection < 0)))) {
+          if (($46 = ((_selection < 0)))) {
             _sum = $_k;
           }
         }

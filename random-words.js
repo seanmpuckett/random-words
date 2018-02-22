@@ -5,7 +5,7 @@
 
 "use strict";
 
-var prototype=new function(){
+var prototype=new function() {
 this.Constructor=function(){};
 this.__tobelocked=[];
 this.__tobefrozen=[];
@@ -16,15 +16,16 @@ return this;
 }();
 var $AI=require("sai-library");
 // Generated code follows
-var __context={"name":"random-words","loader":"SAI.GetSourceFromPaths","path":"random-words.sai","mtime":"2018-02-18T23:19:11.740Z","fetched":"2018-02-19T00:01:38.781Z"};
+var __context={"name":"random-words","loader":"SAI.GetSourceFromPaths","path":"random-words.sai","mtime":"2018-02-20T21:11:02.776Z","fetched":"2018-02-22T02:16:36.387Z"};
 var _FS = require('fs');
 var _ReadFile = _FS.readFileSync;
-var _Floor = Math.floor;
-var _Random = Math.random;
 var _ARGV = process.argv;
 var _Exit = process.exit;
 var _WATCHDOG = 100;
 var isa = prototype.isa = 'RW';
+var $bindfail = function(m) {
+  throw new Error("SAI: A call to " + m + " on object " + isa + " has come unbound from any instance of that object. (If this is not in error, mark the declaration of " + m + " as unbound.)");
+}
 prototype.isof['RW'] = {
   version: '0.0.0-unspecified',
   isa: isa,
@@ -57,7 +58,7 @@ prototype.Constructor = function() {
 };
 var $3g = prototype['Instantiate'] || function() {};
 prototype['Instantiate'] = function(p) {
-  var $_d, $_c, $_b, $7, $6, $5, _results, $4, _source, $2, $1, $0, _argv, $ = this; {
+  var $_d, $_c, $_b, $7, $6, $5, _results, $4, _source, $2, $1, $0, _argv, $ = this['Instantiate'] ? this : $bindfail('Instantiate'); {
     $.markovWord = $AI.create_op('MarkovWord', [undefined]);
     _argv = $AI.clone_op(_ARGV);
     if (($0 = (('node' === $AI.slice_op((_argv[0]), undefined, (0 - (4))))))) {
