@@ -81,7 +81,7 @@ AnalyzeWeighted task given source
     ply line as word
       if number word 
         set weight to trial
-      else if word's length >= window
+      elsif word's length >= window
         push'd valid word
         if word's length > window
           AddWord it, weight
@@ -124,7 +124,7 @@ AddWord task given word, weight
 
 GetWord task
   set word to leader
-  do until predicted is '_'
+  dountil predicted is '_'
     set
       current to word limit -window
       selection from Floor totals\current * !Random

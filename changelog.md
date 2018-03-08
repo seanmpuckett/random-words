@@ -1,5 +1,10 @@
 # random-words changelog
 
+## 1.0.4
+
+ - Minor syntax updates to bring up to date with sai 0.1.22
+ 
+
 ## 1.0.3
 
  - added changelog
