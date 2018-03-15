@@ -43,13 +43,13 @@ set given w
 
 
 Configure task given options
-  every options select settings
-    set me\key it
+  every options | select settings
+    set @\key it
 
 
 Finalize task
   each markov
-    set totals\key to it into 0 sum + it
+    set totals\key to it | total
 
 
 AnalyzeUnweighted task given source
@@ -58,9 +58,9 @@ AnalyzeUnweighted task given source
       toLowerCase
       replace /[^a-z\-]/g, ' '
       split /\s+/
-      has it's length >= window
+      | has it's length >= window
     
-  every corpus has it's length > window 
+  every corpus | has it's length > window 
     AddWord it, 1  
 
   Finalize
@@ -73,8 +73,8 @@ AnalyzeWeighted task given source
       toLowerCase
       replace /[^a-z\-0-9]/g, ' '
       split /[\r\n]/
-      thru split'd it /\s+/
-      thru it by number it desc
+      | thru split'd it /\s+/
+      | thru it | by number it desc
   
   ply corpus as line
     set weight to 1
@@ -94,7 +94,7 @@ AnalyzeWeighted task given source
 Generate task given wordcount
   set
     results to empty
-    tally to corpus into blank 
+    tally to corpus | into blank 
       set sum\it 1
     duplicate to WATCHDOG * wordcount
 
@@ -106,9 +106,9 @@ Generate task given wordcount
       dec duplicate
     inc tally\word
     
-  set results to self by tally\it desc
+  set results to self | by tally\it desc
   if frequency
-     set results to self thru '${it}(${tally\it})'
+     set results | thru '${it}(${tally\it})'
   
   return results
 
@@ -116,8 +116,8 @@ Generate task given wordcount
 AddWord task given word, weight
   set word to '${leader}${word}_'
   count word's length - window
-    set current to word limit counter, window
-    set predicted to word limit counter + window, 1
+    set current to word | limit counter, window
+    set predicted to word | limit counter + window, 1
     set markov\current default blank
     set markov\current\predicted to weight + self?0
 
@@ -126,15 +126,15 @@ GetWord task
   set word to leader
   dountil predicted is '_'
     set
-      current to word limit -window
+      current to word | limit -window
       selection from Floor totals\current * !Random
-      predicted to markov\current into 'BAD_MARKOV'
+      predicted to markov\current | into 'BAD_MARKOV'
         if selection >= 0 
           set selection to self - it
           if selection < 0
             set sum to key
       word + predicted
-  set word to self limit window, -1
+  set word to self | limit window, -1
   return word
 
 

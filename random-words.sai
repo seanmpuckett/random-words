@@ -30,8 +30,8 @@ Instantiate task
   set markovWord create 'MarkovWord'
 
   set argv to copy ARGV 
-  if 'node' is (argv.0 limit -4) .. shift'd argv
-  if 'sai-run' is (argv.0 limit -7) .. shift'd argv
+  if 'node' is (argv.0 | limit -4) .. shift'd argv
+  if 'sai-run' is (argv.0 | limit -7) .. shift'd argv
   shift'd argv
   
   if argv's length < 1
@@ -71,7 +71,7 @@ Instantiate task
         unless it < 2
           set window to it
         else
-          debug `Error: --window cannot be less than 2.
+          debug 'Error: --window cannot be less than 2.'
           Exit
   
     case '-i', '--influence'
@@ -90,23 +90,23 @@ Instantiate task
       try
         set source from ReadFile it, 'utf8'
       catch
-        debug `Error ${error's message} reading file.
+        debug 'Error ${error's message} reading file.'
         Exit
         
-      markovWord.Configure me 
+      markovWord.Configure @ 
       markovWord\weighted source
 
       unless markovWord's success
-        debug `No input words longer than ${window} letters, cannot produce a markov chain. 
+        debug 'No input words longer than ${window} letters, cannot produce a markov chain. '
       else
-        set results Generate'd markovWord wordcount; limit 0, truncate
+        set results Generate'd markovWord wordcount; | limit 0, truncate
         unless results's length
           debug 'No unique words generated. Try increasing count or decreasing window size.'
         else
           if results's length < (truncate ? wordcount)/2
             debug 'Few unique words generated due to high window size or low input variety.'
             
-          set results to self thru toUpperCase'd (it limit 1); + (it limit 1, undefined)
+          set results | thru toUpperCase'd (it | limit 1); + (it | limit 1, undefined)
           debug join'd results ' '
 
 
